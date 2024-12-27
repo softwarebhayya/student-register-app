@@ -1,6 +1,8 @@
 package com.softwarebhayya.student.register;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class StudentController {
 
 	private final StudentRepository studentRepository;
+	private static final Logger log = LoggerFactory.getLogger(StudentController.class);
 
 	@Autowired
 	public StudentController(StudentRepository studentRepository) {
@@ -41,6 +44,7 @@ public class StudentController {
 		}
 		student.setId(UUID.randomUUID().toString());
 		studentRepository.save(student);
+		log.info("**** Saved student to DB with name: {}", student.getName());
 		return "redirect:list";
 	}
 
@@ -61,6 +65,7 @@ public class StudentController {
 		}
 
 		studentRepository.save(student);
+		log.info("**** Updated student to DB with name: {}", student.getName());
 		model.addAttribute("students", studentRepository.findAll());
 		return "index";
 	}
@@ -69,6 +74,7 @@ public class StudentController {
 	public String deleteStudent(@PathVariable("id") String id, Model model) {
 		Student student = studentRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid student Id:" + id));
+		log.info("**** Deleted student to DB with name: {}", student.getName());
 		studentRepository.delete(student);
 		model.addAttribute("students", studentRepository.findAll());
 		return "index";
